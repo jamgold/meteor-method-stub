@@ -1,0 +1,41 @@
+/* CSS declarations go here */
+
+body {
+	background-color: purple;
+	color: #eee;
+	padding: 2em;
+	margin-top: 2em;
+}
+
+div.alert {
+	position: absolute;
+	top: 10%;
+	left: 10%;
+	width: 70%;
+}
+
+div.modal {
+	color: black;
+}
+
+.gist-highlight {
+	margin-top: 5em;
+    border-left: 3ex solid #eee;
+    position: relative;
+    /*max-height: 20em;    overflow:auto;*/
+}
+ 
+.gist-highlight pre {
+    counter-reset: linenumbers;
+    border-radius: 0;
+}
+ 
+.gist-highlight pre div:before {
+    color: black;
+    content: counter(linenumbers);
+    counter-increment: linenumbers;
+    left: -3ex;
+    position: absolute;
+    text-align: right;
+    width: 2.5ex;
+}
