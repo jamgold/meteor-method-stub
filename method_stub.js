@@ -1,3 +1,4 @@
+// https://github.com/jamgold/meteor-method-stub
 if (Meteor.isClient) {
   Session.setDefault('greeting', 'Default Greeting');
   Session.setDefault('progress', 0);
@@ -15,7 +16,8 @@ if (Meteor.isClient) {
   console.log = function(x) {
     if(Session.get('consoleLogOnScreen'))
     {
-      $('#log').append('<div>'+x+'</div>');      
+      if(typeof x == 'object') x = EJSON.stringify(x);
+      $('#log').append('<div>'+x+'</div>');
     }
     else
     {
@@ -69,7 +71,7 @@ if (Meteor.isClient) {
   {
     if(err)
     {
-      console.log(err);
+      console.logOrig(err.message);
     }
     else
     {
@@ -78,7 +80,7 @@ if (Meteor.isClient) {
       if(Session.equals('progress', 100))
       {
         console.log("Method result: "+result);
-        Bootstrap3boilerplate.Modal.body.set('Last result from server: '+result);
+        Bootstrap3boilerplate.Modal.body.set('<p>Last result from server: '+result+'</p><p>Here is the <a target="_new" href="https://github.com/jamgold/meteor-method-stub">source</a></p>');
         Bootstrap3boilerplate.Modal.show();
       }
       else
@@ -125,7 +127,7 @@ if (Meteor.isClient) {
 
   Bootstrap3boilerplate.Modal.title.set('Method Done');
   Bootstrap3boilerplate.Modal.body.set('<p>The Meteor Method on the server has finished.</p>');
-
+  Bootstrap3boilerplate.Footer.show.set(false);
   //
   // assign additional rendered function to Modal to add event to reset progress
   //
