@@ -1,9 +1,7 @@
-
 if (Meteor.isClient) {
   Session.setDefault('greeting', 'Default Greeting');
   Session.setDefault('progress', 0);
   Session.setDefault('consoleLogOnScreen', true);
-  Session.setDefault('modal_body', '<p>The Meteor Method on the server has finished.</p>');
   //
   // create some global variables for debugging
   //
@@ -36,48 +34,34 @@ if (Meteor.isClient) {
     this.template_custom_result_field = 'changes will never be visible in template.rendered';
   };
 
-  Template.hello.greeting = function () {
-    // this = Windows
-    var v = Session.get("greeting");
-    return v;
+  Template.hello.rendered = function () {
   };
 
-  Template.hello.consoleLogOnScreen = function() {
-    return Session.get('consoleLogOnScreen') ? 'checked' : '';
-  };
+  Template.hello.helpers({
+    greeting: function () {
+      // this = Windows
+      var v = Session.get("greeting");
+      return v;
+    },
+    consoleLogOnScreen: function() {
+      return Session.get('consoleLogOnScreen') ? 'checked' : '';
+    },
+    progress: function() {
+      return Session.get('progress');
+    },
+    rendered: function() {
+      // this = Template
+      //
+      // set progress to 0
+      //
+      Session.set('progress', 0);
+      //
+      // check if we retained the custom value we set in the create phase
+      //
+      console.log("Template.hello.rendered template_custom_result_field="+this.template_custom_result_field);
+    }
+  });
 
-  Template.hello.progress = function() {
-    return Session.get('progress');
-  };
-
-  Template.hello.rendered = function() {
-    // this = Template
-    //
-    // set progress to 0
-    //
-    Session.set('progress', 0);
-    //
-    // check if we retained the custom value we set in the create phase
-    //
-    console.log("Template.hello.rendered template_custom_result_field="+this.template_custom_result_field);
-  };
-
-  Template.modal.rendered = function() {
-    console.log('Template.modal.rendered');
-    TemplateModalInstance = this;
-    //
-    // add modal event handler to reset result when the modal closes
-    //
-    this.$('#myModal').on('hidden.bs.modal', function (e) {
-        Session.set('progress', 0);
-        $('.btn.call-method').removeClass('disabled');
-    });
-  };
-
-  Template.modal.modal_body = function() {
-    console.log('Template.modal.modal_body');
-    return Session.get('modal_body');
-  };
   //
   // create function to handle the results of the method call
   //
@@ -94,8 +78,8 @@ if (Meteor.isClient) {
       if(Session.equals('progress', 100))
       {
         console.log("Method result: "+result);
-        Session.set('modal_body', 'Last result from server: '+result);
-        TemplateModalInstance.$('#myModal').modal();
+        Bootstrap3boilerplate.Modal.body.set('Last result from server: '+result);
+        Bootstrap3boilerplate.Modal.show();
       }
       else
       {
@@ -125,8 +109,40 @@ if (Meteor.isClient) {
     }
   });
 
+  Bootstrap3boilerplate.setContent('#hello');
+
+  Bootstrap3boilerplate.ProjectName.set({text:'Meteor Stub Methods'});
+
+  Bootstrap3boilerplate.Navbar.left = function(){
+    return [
+    // {text:'Home',href:'#hello'}
+    ];
+  };
+  
+  Bootstrap3boilerplate.Navbar.right = function(){
+    return [];
+  };
+
+  Bootstrap3boilerplate.Modal.title.set('Method Done');
+  Bootstrap3boilerplate.Modal.body.set('<p>The Meteor Method on the server has finished.</p>');
+
+  //
+  // assign additional rendered function to Modal to add event to reset progress
+  //
+  Bootstrap3boilerplate.Modal.rendered = function(){
+    //
+    // this is Bootstrap3boilerplate.Modal
+    //
+    this.template.$('#'+this.id).on('hidden.bs.modal', function (e) {
+        Session.set('progress', 0);
+        $('.btn.call-method').removeClass('disabled');
+    });
+  };
+
   Meteor.startup(function(){
-    Session.setDefault("greeting", "Hello Default");
+    Session.set('progress',0);
+    console.log('startup');
+    Bootstrap3boilerplate.init();
   });
 }
 
