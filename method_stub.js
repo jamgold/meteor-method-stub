@@ -36,9 +36,6 @@ if (Meteor.isClient) {
     this.template_custom_result_field = 'changes will never be visible in template.rendered';
   };
 
-  Template.hello.rendered = function () {
-  };
-
   Template.hello.helpers({
     greeting: function () {
       // this = Windows
@@ -63,9 +60,8 @@ if (Meteor.isClient) {
       console.log("Template.hello.rendered template_custom_result_field="+this.template_custom_result_field);
     }
   });
-
   //
-  // create function to handle the results of the method call
+  // create function to handle the results of the method call recursively
   //
   var methodResult = function(err, result)
   {
@@ -87,9 +83,9 @@ if (Meteor.isClient) {
       {
         console.log("Method result: "+result);
         //
-        // now call the method again
+        // now call the method again (recursion)
         //
-        Meteor.call('stub_method', new Date().getTime() , methodResult);
+        Meteor.call('my_method', new Date().getTime() , methodResult);
       }
     }
   };
@@ -103,7 +99,7 @@ if (Meteor.isClient) {
       //
       // now call the method
       //
-      Meteor.call('stub_method',  template.call_time , methodResult);
+      Meteor.call('my_method',  template.call_time , methodResult);
     },
     'change input.consoleLogOnScreen': function(e,template) {
       e.preventDefault();
@@ -112,19 +108,15 @@ if (Meteor.isClient) {
   });
 
   Bootstrap3boilerplate.setContent('#hello');
-
   Bootstrap3boilerplate.ProjectName.set({text:'Meteor Stub Methods'});
-
   Bootstrap3boilerplate.Navbar.left = function(){
     return [
     // {text:'Home',href:'#hello'}
     ];
   };
-  
   Bootstrap3boilerplate.Navbar.right = function(){
     return [];
   };
-
   Bootstrap3boilerplate.Modal.title.set('Method Done');
   Bootstrap3boilerplate.Modal.body.set('<p>The Meteor Method on the server has finished.</p>');
   Bootstrap3boilerplate.Footer.show.set(false);
@@ -157,16 +149,15 @@ if (Meteor.isServer) {
 // create a method on client & server
 //
 Meteor.methods({
-  stub_method: function(v) {
-    // var v = t.call_time;
-    //
-    // this runs on the client
-    //
+  my_method: function(countdown) {
     if(this.isSimulation)
     {
-      console.log("Simulation: Hello Client "+v);
+      //
+      // this runs on the client
+      //
+      console.log("Simulation: Hello Client "+countdown);
       // the return value will be in the result parameter of the async callback
-      Session.set("greeting", "Hello Client Simulated "+v);
+      Session.set("greeting", "Hello Client Simulated "+countdown);
       // increase the progress
       Session.set('progress', Session.get('progress')+5);
     }
@@ -176,13 +167,13 @@ Meteor.methods({
       // this only runs on the server
       // create small delay before returning
       //
-      for(var i=parseInt(v,10);i>0;i--) {
+      for(var i=parseInt(countdown,10);i>0;i--) {
         i-=5000;
       }
       //
       // the return value will be in the result parameter of the async callback
       //
-      return "Hello from Server method "+v;
+      return "Hello from Server method "+countdown;
     }
   }
 });
